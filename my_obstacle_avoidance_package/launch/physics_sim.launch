@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <!-- ##################### -->
+    <!-- ####  Arguments  #### -->
+    <!-- ##################### -->
+
+    <!-- Simulate an actuator delay -->
+    <arg name="delay"           default="0.00"/>
+    <!-- Set to false to hide the Gazebo GUI -->
+    <arg name="gazebo_gui"      default="true"/>
+    <!-- Set to true with nvidia:=true on command line if you are using an NVIDIA graphics card -->
+    <arg name="nvidia"          default="true"/>
+    <!-- Driving mode: obstacle = slow and avoid obstacles / circuit = fast and parking -->
+    <arg name="driving_mode"    default="obstacle"/>
+
+    <!-- World to be used. The world has to be created with the gazebo_world_generator first. -->
+    <arg name="world"           default="$(find gazebo_world_generator)/world/worlds/world.sdf"/>
+    <!-- Description of the car model. -->
+    <arg name="model"           default="$(find simulation)/urdf/car.xacro"/>
+    <!-- Config for rviz. -->
+    <arg name="rvizconfig"      default="$(find my_obstacle_avoidance_package)/launch/rviz/config_basic.rviz"/>
+
+    <!-- ######################### -->
+    <!-- ####  Driving nodes  #### -->
+    <!-- ######################### -->
+
+    <!-- Overwrite parameter defaults. -->
+    <param name="/control/constraints/delay" value="0.15"/>
+    <param name="/waypoint_planning/circuit_mode/num_parking_maneuvers" value="1000"/>
+    <param name="/my_parking_node/circuit_mode/num_parking_maneuvers" value="1000"/>
+    <param name="/car_joints_control_cfg/simulated_steering_delay" value="$(arg delay)"/>
+
+    <!-- Load description of the car. -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)"/>
+
+    <!-- Start simulation. -->
+    <include file="$(find simulation)/launch/road.launch">
+        <arg name="world_name"  value="$(arg world)"/>
+        <arg name="gui"         value="$(arg gazebo_gui)"/>
+        <arg if="$(arg nvidia)" name="nvidia" value="1"/>
+    </include>
+
+    <!-- Spawn car model in gazebo. -->
+    <node name="robmodel" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -urdf -x 0 -y 0 -z 0 -model SCAR"/>
+
+    <!-- Publish gazebo model state on the /tf topic. -->
+    <node name="gazebo_to_tf" pkg="simulation" type="gazebo_to_tf.py"/>
+
+    <!-- Joint and tf publisher. -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+    <!-- Publish the driving mode. -->
+    <node name="driving_mode_pub" pkg="simulation" type="mode_publisher.py">
+        <param name="driving_mode" value="$(arg driving_mode)"/>
+    </node>
+
+    <!-- Skip map creating by using a static map. -->
+    <node name="static_map" pkg="gazebo_world_generator" type="commonroad_static_map.py"/>
+
+    <!-- Node to plan waypoints where the car should drive to. (Only use one planning node at a time!) -->
+    <!-- TODO: Use your own waypoint planning node here to implement your obstacle avoidance! -->
+    <node name="my_obstacle_avoidance_node" pkg="my_obstacle_avoidance_package" type="my_waypoint_planning_node.py" output="screen"/>
+    <!-- <node name="waypoint_planning" pkg="waypoint_planning" type="waypoint_planning_node.py"/> -->
+
+    <!-- Node to interpolate between waypoints to reach them smoothly. -->
+    <node name="trajectory_interpolation" pkg="trajectory_planning" type="trajectory_interpolation_node"/>
+
+    <!-- Node to send control commands to drive the car. (Only use one control node at a time!) -->
+    <node name="control" pkg="control" type="orientation_based_control_node" output="screen"/>
+    <!-- <node name="control" pkg="my_controller_package" type="my_controller_node" output="screen"/> -->
+
+    <!-- ############################### -->
+    <!-- ####  Visualization nodes  #### -->
+    <!-- ############################### -->
+
+    <!-- Open rviz. -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" respawn="true"/>
+
+    <!-- Publish marker in rviz. -->
+    <node name="map_viz" pkg="utils" type="viz_map.py"/>
+    <node name="waypoint_plan_viz" pkg="utils" type="viz_waypoint_plan.py"/>
+    <node name="trajectory_viz" pkg="utils" type="viz_trajectory_planning.py"/>
+    <node name="car_state_viz" pkg="utils" type="viz_car_state.py"/>
+
+</launch>

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <!-- ##################### -->
+    <!-- ####  Arguments  #### -->
+    <!-- ##################### -->
+
+    <!-- Simulate an actuator delay -->
+    <arg name="delay"           default="0.00"/>
+    <!-- Map to be used. Possible maps can be found in ros/utils/scripts/static_maps -->
+    <arg name="static_map"      default="avoidance_test.py"/>
+
+    <!-- Description of the car model. -->
+    <arg name="model"           default="$(find loewen)/urdf/car.xacro"/>
+    <!-- Config for rviz. -->
+    <arg name="rvizconfig"      default="$(find my_obstacle_avoidance_package)/launch/rviz/config_basic.rviz"/>
+
+    <!-- ######################### -->
+    <!-- ####  Driving nodes  #### -->
+    <!-- ######################### -->
+
+    <!-- Overwrite parameter defaults. -->
+    <param name="/control/constraints/delay" value="0.15"/>
+    <param name="/waypoint_planning/circuit_mode/num_parking_maneuvers" value="1000"/>
+    <param name="/my_parking_node/circuit_mode/num_parking_maneuvers" value="1000"/>
+
+    <!-- Load description of the car. -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)"/>
+
+    <!-- Start simulation. -->
+    <node name="mini_sim" pkg="utils" type="sim_with_drive_control.py">
+        <param name="delay" value="$(arg delay)"/>
+    </node>
+
+    <!-- Joint and tf publisher. -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+    <!-- Skip map creating by using a static map. -->
+    <node name="static_map" pkg="utils" type="static_map.py" args="$(arg static_map)"/>
+
+    <!-- Node to plan waypoints where the car should drive to. (Only use one planning node at a time!) -->
+    <!-- TODO: Use your own waypoint planning node here to implement your obstacle avoidance! -->
+    <node name="my_obstacle_avoidance_node" pkg="my_obstacle_avoidance_package" type="my_waypoint_planning_node.py" output="screen"/>
+    <!-- <node name="waypoint_planning" pkg="waypoint_planning" type="waypoint_planning_node.py"/> -->
+
+    <!-- Node to interpolate between waypoints to reach them smoothly. -->
+    <node name="trajectory_interpolation" pkg="trajectory_planning" type="trajectory_interpolation_node"/>
+
+    <!-- Node to send control commands to drive the car. (Only use one control node at a time!) -->
+    <node name="control" pkg="control" type="orientation_based_control_node" output="screen"/>
+    <!-- <node name="control" pkg="my_controller_package" type="my_controller_node" output="screen"/> -->
+
+    <!-- ############################### -->
+    <!-- ####  Visualization nodes  #### -->
+    <!-- ############################### -->
+
+    <!-- Open rviz. -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" respawn="true"/>
+
+    <!-- Publish marker in rviz. -->
+    <node name="map_viz" pkg="utils" type="viz_map.py"/>
+    <node name="waypoint_plan_viz" pkg="utils" type="viz_waypoint_plan.py"/>
+    <node name="trajectory_viz" pkg="utils" type="viz_trajectory_planning.py"/>
+    <node name="car_state_viz" pkg="utils" type="viz_car_state.py"/>
+
+</launch>

@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- ##################### -->
+    <!-- ####  Arguments  #### -->
+    <!-- ##################### -->
+
+    <!-- Default bag file to load data from. -->
+    <arg name="bag"                 default="$(find my_detection_package)/rosbag/recorded_topics.bag"/>
+    <!-- Rate at which data should be replayed. -->
+    <arg name="rate"                default="1.0"/>
+    <!-- Use obstacle mode to handle barred area and crosswalk detections. -->
+    <arg name="use_obstacle_mode"   default="true"/>
+    <!-- Config for rviz. -->
+    <arg name="rvizconfig"          default="$(find my_detection_package)/launch/rviz/config_video.rviz"/>
+
+    <!-- ######################### -->
+    <!-- ####  Driving nodes  #### -->
+    <!-- ######################### -->
+
+    <!-- Overwrite parameter defaults. -->
+    <param name="use_sim_time" value="true"/>
+
+    <!-- Replay recorded sensor data, recorded with 'rosrun loewen record-sensors.py'. -->
+    <include file="$(find loewen)/launch/replay_sensors.launch" unless="$(eval bag == 0)">
+        <arg name="bag"                 value="$(arg bag)"/>
+        <arg name="rate"                value="$(arg rate)"/>
+        <arg name="use_obstacle_mode"   value="$(arg use_obstacle_mode)"/>
+    </include>
+
+    <!-- Loop data when done. -->
+    <node name="img_proc_for_bag_replay" pkg="preprocessing" type="img_proc_for_bag_replay"/>
+
+    <!-- Node to publish current /tf data of the car. -->
+    <node name="odometry" pkg="preprocessing" type="c_odometry"/>
+
+    <!-- Node to detect the street. -->
+    <node name="lane_detection" pkg="perception" type="lane_detection_node"/>
+
+    <!-- Node to implement object detection. -->
+    <node pkg="perception" type="detection_manager" name="detection_manager"/>
+    <node pkg="my_detection_package" type="my_detector_node" name="my_detector_node" output="screen"/>
+
+    <!-- Node to build map from street and detections. -->
+    <node name="mapping" pkg="mapping" type="mapping"/>
+
+    <!-- Node to plan waypoints where the car should drive to. -->
+    <node name="waypoint_planning" pkg="waypoint_planning" type="waypoint_planning_node.py"/>
+
+    <!-- Node to interpolate between waypoints to reach them smoothly. -->
+    <node name="trajectory_planning" pkg="trajectory_planning" type="trajectory_interpolation_node"/>
+
+    <!-- ############################### -->
+    <!-- ####  Visualization nodes  #### -->
+    <!-- ############################### -->
+
+    <!-- Open rviz. -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"/>
+
+    <!-- Publish marker in rviz. -->
+    <node name="lane_detection_viz" pkg="utils" type="viz_lane_detection.py"/>
+    <node pkg="preprocessing" type="odometry_visualization.py" name="odometry_viz"/>
+    <node name="map_viz" pkg="utils" type="viz_map.py"/>
+    <node name="waypoint_plan_viz" pkg="utils" type="viz_waypoint_plan.py"/>
+    <node name="trajectory_viz" pkg="utils" type="viz_trajectory_planning.py"/>
+
+</launch>

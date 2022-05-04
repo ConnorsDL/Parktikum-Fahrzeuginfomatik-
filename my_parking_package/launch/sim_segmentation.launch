@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- ##################### -->
+    <!-- ####  Arguments  #### -->
+    <!-- ##################### -->
+
+    <!-- Without overwriting DISPLAY env var, Gazebo does not work when running over SSH or in a container -->
+    <arg name="display"         default="$(env DISPLAY)"/>
+    <env name="DISPLAY"         value="$(arg display)"/>
+
+    <!-- Set to false to hide the Gazebo GUI -->
+    <arg name="gazebo_gui"      default="true"/>
+    <!-- Set to true with nvidia:=true on command line if you are using an NVIDIA graphics card -->
+    <arg name="nvidia"          default="false"/>
+    <!-- Driving mode: obstacle = slow and avoid obstacles / circuit = fast and parking -->
+    <arg name="driving_mode"    default="circuit"/>
+    <!-- Use meshes in simulation. -->
+    <arg name="use_meshes"      default="true"/>
+    <!-- Delay before the car starts driving. -->
+    <arg name="start_delay"     default="3"/>
+
+    <!-- World to be used. The world has to be created with the gazebo_world_generator first. -->
+    <arg name="world"           default="$(find gazebo_world_generator)/world/worlds/world.sdf"/>
+    <!-- Description of the car model. -->
+    <arg name="model"           default="$(find simulation)/urdf/car.xacro"/>
+    <!-- Config for rviz. -->
+    <arg name="rvizconfig"      default="$(find my_parking_package)/launch/rviz/config_segmentation.rviz"/>
+
+    <!-- ######################### -->
+    <!-- ####  Driving nodes  #### -->
+    <!-- ######################### -->
+
+    <!-- Overwrite parameter defaults. -->
+    <param name="/control/constraints/delay" value="0.15"/>
+    <param name="/waypoint_planning/circuit_mode/num_parking_maneuvers" value="1000"/>
+    <param name="/my_parking_node/circuit_mode/num_parking_maneuvers" value="1000"/>
+    
+    <!-- Load description of the car. -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model) use_meshes:=$(arg use_meshes)"/>
+
+    <!-- Start simulation. -->
+    <include file="$(find simulation)/launch/road.launch">
+        <arg name="world_name"  value="$(arg world)"/>
+        <arg name="gui" value="$(arg gazebo_gui)"/>
+        <arg if="$(arg nvidia)" name="nvidia" value="1"/>
+    </include>
+
+    <!-- Spawn car model in gazebo. -->
+    <node name="robmodel" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -urdf -x 0 -y 0 -z 0 -model SCAR"/>
+
+    <!-- Joint and tf publisher. -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+    <!-- Publish the driving mode. -->
+    <node name="driving_mode_pub" pkg="simulation" type="mode_publisher.py">
+        <param name="driving_mode" value="$(arg driving_mode)"/>
+        <param name="start_delay" value="$(arg start_delay)"/>
+    </node>
+
+    <!-- Map creation. -->
+    <node name="camera_cropping" pkg="simulation" type="camera_cropping"/>
+    <node name="odometry" pkg="preprocessing" type="c_odometry"/>
+    <node name="lane_detection" pkg="perception" type="lane_detection_node"/>
+    <node name="image_processor" pkg="preprocessing" type="img_proc_node"/>
+    <node name="mapping" pkg="mapping" type="mapping"/>
+    <node name="homography" pkg="simulation" type="homography.py"/>
+
+    <!-- Node to plan waypoints where the car should drive to. (Only use one planning node at a time!) -->
+    <!-- TODO: Use your own waypoint planning node here to implement the parking behavior! -->
+    <node name="my_parking_node" pkg="my_parking_package" type="my_waypoint_planning_node.py" output="screen"/>
+    <!-- <node name="waypoint_planning" pkg="waypoint_planning" type="waypoint_planning_node.py"/> -->
+
+    <!-- Node to interpolate between waypoints to reach them smoothly. -->
+    <node name="trajectory_interpolation" pkg="trajectory_planning" type="trajectory_interpolation_node"/>
+
+    <!-- Node to send control commands to drive the car. (Only use one control node at a time!) -->
+    <node name="control" pkg="control" type="orientation_based_control_node" output="screen"/>
+    <!-- <node name="control" pkg="my_controller_package" type="my_controller_node" output="screen"/> -->
+
+    <!-- Segmentation nodes for object detection. -->
+    <node pkg="perception" type="torch_segmentation" name="segmentation_node" />
+    <node pkg="perception" type="segmentation_post_proc_node" name="segmentation_post_proc_node" />
+    <node pkg="perception" type="parking_seg_post_proc_node" name="parking_seg_post_proc_node" />
+    <node pkg="perception" type="crosswalk_detector" name="crosswalk_detector" />
+    <node pkg="perception" type="detection_manager" name="detection_manager"/>
+
+    <!-- ############################### -->
+    <!-- ####  Visualization nodes  #### -->
+    <!-- ############################### -->
+
+    <!-- Open rviz. -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)"/>
+
+    <!-- Publish marker in rviz. -->
+    <node name="segmentation_legend_node" pkg="perception" type="segmentation_legend_node.py"/>
+    <node name="lane_detection_viz" pkg="utils" type="viz_lane_detection.py"/>
+    <node name="odometry_viz" pkg="preprocessing" type="odometry_visualization.py"/>
+    <node name="map_viz" pkg="utils" type="viz_map.py"/>
+    <node name="waypoint_plan_viz" pkg="utils" type="viz_waypoint_plan.py"/>
+    <node name="trajectory_viz" pkg="utils" type="viz_trajectory_planning.py"/>
+    <node name="car_state_viz" pkg="utils" type="viz_car_state.py"/>
+
+</launch>

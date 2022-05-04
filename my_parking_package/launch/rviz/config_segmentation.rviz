@@ -1,0 +1,342 @@
+Panels:
+  - Class: rviz/Displays
+    Help Height: 78
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+      Splitter Ratio: 0.6030534505844116
+    Tree Height: 496
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Expanded:
+      - /2D Pose Estimate1
+      - /2D Nav Goal1
+      - /Publish Point1
+    Name: Tool Properties
+    Splitter Ratio: 0.5886790156364441
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+      - /Top View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: Image (camera view)
+Preferences:
+  PromptSaveOnExit: true
+Toolbars:
+  toolButtonStyle: 2
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 1
+      Cell Size: 0.5
+      Class: rviz/Grid
+      Color: 2; 16; 16
+      Enabled: true
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        camera_basler:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        camera_basler_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_pole:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        front_left_strut:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        front_left_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        front_right_strut:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        front_right_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ipm_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        lidar:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        rear_left_strut:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rear_left_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rear_right_strut:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rear_right_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        steerbot_chassis:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        steerbot_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Class: rviz/Axes
+      Enabled: false
+      Length: 0.5
+      Name: Axes
+      Radius: 0.009999999776482582
+      Reference Frame: <Fixed Frame>
+      Value: false
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /car_state_viz
+      Name: Marker (car state)
+      Namespaces:
+        car_state: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /lane_detection_viz
+      Name: Marker (lane detection)
+      Namespaces:
+        lane_detection: true
+        lane_detection_double_l: true
+        lane_detection_double_r: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /map_viz
+      Name: Marker (map)
+      Namespaces:
+        contexts: true
+        main_street_dom: true
+        main_street_ll: true
+        main_street_rl: true
+        main_street_rl_double_l: true
+        main_street_rl_double_r: true
+        main_street_rr: true
+        objects: true
+        objects_texts: true
+        objectsori: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /waypoint_plan_viz
+      Name: Marker (waypoints)
+      Namespaces:
+        waypoint_plan: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /trajectory_viz
+      Name: Marker (trajectory)
+      Namespaces:
+        trajectory: true
+        trajectory_tolerance: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /my_marker_topic
+      Name: Marker (my markers)
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /camera_basler/image_scaled_down
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Image (camera view)
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /ipm/image_raw
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Image (inverse perspective mapping)
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /segmentation_proc_parking_spot_right_debug_image
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Image (segmentation visualization)
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Default Light: true
+    Fixed Frame: base_link
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+    - Class: rviz/SetInitialPose
+      Theta std deviation: 0.2617993950843811
+      Topic: /initialpose
+      X std deviation: 0.5
+      Y std deviation: 0.5
+    - Class: rviz/SetGoal
+      Topic: /move_base_simple/goal
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 6.938623905181885
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Field of View: 0.8999999761581421
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 1.5697963237762451
+      Target Frame: <Fixed Frame>
+      Yaw: 3.140000104904175
+    Saved:
+      - Class: rviz/Orbit
+        Distance: 8
+        Enable Stereo Rendering:
+          Stereo Eye Separation: 0.05999999865889549
+          Stereo Focal Distance: 1
+          Swap Stereo Eyes: false
+          Value: false
+        Field of View: 0.8999999761581421
+        Focal Point:
+          X: 0
+          Y: 0
+          Z: 0
+        Focal Shape Fixed Size: true
+        Focal Shape Size: 0.05000000074505806
+        Invert Z Axis: false
+        Name: Top View
+        Near Clip Distance: 0.009999999776482582
+        Pitch: 1.5697963237762451
+        Target Frame: <Fixed Frame>
+        Yaw: 3.140000104904175
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 1016
+  Hide Left Dock: false
+  Hide Right Dock: false
+  Image (camera view):
+    collapsed: false
+  Image (inverse perspective mapping):
+    collapsed: false
+  Image (segmentation visualization):
+    collapsed: false
+  QMainWindow State: 000000ff00000000fd00000002000000000000020e0000039efc020000000afb000000100044006900730070006c006100790073010000003d0000027b000000c900fffffffb000000260049006d0061006700650020002800630061006d00650072006100200076006900650077002901000002be0000011d0000001600fffffffb0000000800540069006d00650000000362000000790000003900fffffffb0000000a0056006900650077007300000002cb00000110000000a400fffffffb0000001200530065006c0065006300740069006f006e00000002cc0000005c0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007300000003170000008f0000005c00fffffffb0000000c00430061006d00650072006100000002500000018b0000000000000000fb0000000a0049006d00610067006500000002ee000000ed0000000000000000fb0000000c00430061006d00650072006100000002c7000001140000000000000000fb0000000c00430061006d00650072006100000002500000018b000000000000000000000001000002190000039efc0200000006fb000000380049006d00610067006500200028006c0061006e006500200064006500740065006300740069006f006e0020006400650062007500670029000000003d000002c70000000000000000fb000000460049006d006100670065002000280069006e007600650072007300650020007000650072007300700065006300740069007600650020006d0061007000700069006e00670029010000003d000001cb0000001600fffffffb000000440049006d00610067006500200028007300650067006d0065006e0074006100740069006f006e002000760069007300750061006c0069007a006100740069006f006e0029010000020e000001cd0000001600fffffffb000000260049006d0061006700650020002800630061006d006500720061002000760069006500770029000000003d0000039e0000000000000000fb0000000c00430061006d006500720061000000003d0000039e0000000000000000fb0000000c00430061006d0065007200610100000028000002310000000000000000000003050000039e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Time:
+    collapsed: false
+  Tool Properties:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 1848
+  X: 72
+  Y: 27

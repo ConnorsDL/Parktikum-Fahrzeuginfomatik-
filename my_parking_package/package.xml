@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>my_parking_package</name>
+    <version>0.0.0</version>
+    <description>The waypoint_planning package</description>
+    <maintainer email="labpc@todo.todo">labpc</maintainer>
+    <license>TODO</license>
+    <buildtool_depend>catkin</buildtool_depend>
+    <build_depend>waypoint_planning</build_depend>
+    <build_depend>loewen_msgs</build_depend>
+    <build_depend>std_msgs</build_depend>
+    <build_depend>loewen_msgs</build_depend>
+    <build_depend>dynamic_reconfigure</build_depend>
+    <build_export_depend>dynamic_reconfigure</build_export_depend>
+    <build_export_depend>std_msgs</build_export_depend>
+    <exec_depend>waypoint_planning</exec_depend>
+    <exec_depend>loewen_msgs</exec_depend>
+    <exec_depend>utils</exec_depend>
+    <exec_depend>loewen_msgs</exec_depend>
+    <exec_depend>std_msgs</exec_depend>
+    <exec_depend>tf_conversions</exec_depend>
+    <exec_depend>dynamic_reconfigure</exec_depend>
+    <export>
+
+    </export>
+</package>
